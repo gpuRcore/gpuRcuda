@@ -1,0 +1,37 @@
+####################################
+# configure for package gpuR
+# Charles Determan Jr.
+
+CXX_STD="CXX_STD=CXX11"
+PKG_CXXFLAGS="PKG_CXXFLAGS=-I../inst/include"
+PKG_LIBS="PKG_LIBS="
+
+DEFAULT_CUDA=/usr/local/cuda
+
+if [ -d "$DEFAULT_CUDA" ]; then
+    echo "Default CUDA is installed"
+    
+    echo "Checking for CUDA_HOME"
+    if test -z "$CUDA_HOME"; then
+        echo "CUDA_HOME not set by user"
+        echo "CUDA_HOME set /usr/local/cuda-7.0"
+        CUDA_HOME=/usr/local/cuda-7.0
+    else
+        echo "CUDA_HOME=" $CUDA_HOME
+    fi
+    
+    if test -n "$CUDA_HOME"; then
+        PKG_CXXFLAGS="${PKG_CXXFLAGS} -I${CUDA_HOME}/include"
+        PKG_LIBS="${PKG_LIBS} -L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 -lcudart -lcublas"
+    else
+        echo "CUDA_HOME env not defined"
+        break
+    fi
+else
+    echo "cuda is not installed"
+    break
+fi
+
+echo "${CXX_STD}" > src/Makevars
+echo "${PKG_CXXFLAGS}" >> src/Makevars
+echo "${PKG_LIBS}" >> src/Makevars

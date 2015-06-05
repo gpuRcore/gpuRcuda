@@ -78,13 +78,7 @@ setClass("icudaMatrix",
 #' \code{\link{dcudaMatrix-class}}
 #' @export
 setClass("fcudaMatrix",
-         contains = "cudaMatrix",
-         validity = function(object) {
-           if( typeof(object) != "float"){
-             return("fcudaMatrix must be of type 'float'")
-           }
-           TRUE
-         })
+         contains = "cudaMatrix")
 
 
 #' @title dcudaMatrix Class

@@ -40,8 +40,8 @@ if [ -d "$DEFAULT_CUDA" ]; then
     
     if test -n "$CUDA_HOME"; then
         R_INCL="${R_INCL} -I${CUDA_HOME}/include"
-        LIBS="${LIBS} -L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 -lcudart -lcublas"
-        PKG_LIBS="${PKG_LIBS} -L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 -lcudart -lcublas"
+        LIBS="${LIBS} -L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 -lcudart"
+        PKG_LIBS="${PKG_LIBS} -L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 -lcudart"
     else
         echo "CUDA_HOME env not defined"
         break

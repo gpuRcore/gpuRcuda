@@ -23,8 +23,8 @@ test_that("CUDA gpuMatrix Double Precision Matrix multiplication successful", {
   
   C <- A %*% B
   
-  dgpuA <- cudaMatrix(A, type="double")
-  dgpuB <- cudaMatrix(B, type="double")
+  dgpuA <- cudaMatrix(A, type="float")
+  dgpuB <- cudaMatrix(B, type="float")
   
   dgpuC <- gpuRcuda:::cpp_vienna_cudaMatrix_sgemm(dgpuA@x, dgpuB@x)
   #     dgpuC <- dgpuA %*% dgpuB

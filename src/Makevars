@@ -1,4 +1,4 @@
-PKG_LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
+PKG_LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart
 R_LIBS := -Wl,--export-dynamic -fopenmp  -L/usr/lib/R/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
 
 cu_sources := $(wildcard *cu)
@@ -18,7 +18,7 @@ CU_ARCH := -arch=sm_30
 CXX=g++
 NVCC=/usr/local/cuda-7.0/bin/nvcc
 
-LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
+LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart
 
 all : gpuRcuda.so
 

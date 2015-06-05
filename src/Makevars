@@ -1,3 +1,4 @@
+PKG_LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
 R_LIBS := -Wl,--export-dynamic -fopenmp  -L/usr/lib/R/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
 
 cu_sources := $(wildcard *cu)
@@ -6,7 +7,7 @@ cu_sharedlibs := $(patsubst %.cu, %.o,$(cu_sources))
 cpp_sources := $(wildcard *.cpp)
 cpp_sharedlibs := $(patsubst %.cpp, %.o, $(cpp_sources))
 
-OBJS := $(cu_sharedlibs) $(cpp_sharedlibs)
+OBJECTS = $(cu_sharedlibs) $(cpp_sharedlibs)
 
 R_INCL := -I../inst/include -I/usr/share/R/include -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/Rcpp/include -I"/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RcppEigen/include" -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RViennaCL/include  -I/usr/local/cuda-7.0/include
 
@@ -14,14 +15,14 @@ CU_ARGS := -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is
 CU_INCL := -I/usr/share/R/include -I/usr/include -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RViennaCL/include -I"/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RcppEigen/include"
 CU_ARCH := -arch=sm_30
 
+CXX=g++
 NVCC=/usr/local/cuda-7.0/bin/nvcc
 
 LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
 
 all : gpuRcuda.so
 
-gpuRcuda.so: $(OBJS)
-		$(NVCC) $(R_LIBS) $(LIBS) -shared -Xlinker $^ -o $@
+gpuRcuda.so: $(OBJECTS)
 
 %.o: %.cpp $(cpp_sources)
 		$(NVCC) -Xcompiler -fPIC $(R_INCL) $< -c

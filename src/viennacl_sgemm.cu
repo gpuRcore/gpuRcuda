@@ -11,9 +11,6 @@
 #include "viennacl/matrix.hpp"
 #include "viennacl/linalg/prod.hpp"
 
-
-// eigen headers for handling the R input data
-//#include <RcppEigen.h>
 // Eigen headers
 #include <Eigen/Core>
 #include <Eigen/Sparse>
@@ -21,8 +18,8 @@
 //using Eigen::Map;
 using Eigen::MatrixXf;
 
-inline
-Eigen::MatrixXf cu_vienna_cudaMatrix_sgemm(const MatrixXf Am, const MatrixXf Bm)
+extern "C"
+Eigen::MatrixXf cu_vienna_cudaMatrix_sgemm(MatrixXf Am, MatrixXf Bm)
 {      
     int M = Am.cols();
     int K = Am.rows();

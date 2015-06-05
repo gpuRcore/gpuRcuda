@@ -18,14 +18,15 @@ using namespace Rcpp;
 using Eigen::Map;
 using Eigen::MatrixXf;
 
-extern MatrixXf cu_vienna_cudaMatrix_sgemm(const MatrixXf Am, const MatrixXf Bm);
+extern "C" 
+MatrixXf cu_vienna_cudaMatrix_sgemm(MatrixXf Am, MatrixXf Bm);
 
 //[[Rcpp::export]]
 SEXP cpp_vienna_cudaMatrix_sgemm(SEXP A_, SEXP B_)
 {    
 
-    const MatrixXf Am = as<MatrixXf>(A_);
-    const MatrixXf Bm = as<MatrixXf>(B_);
+    MatrixXf Am = as<MatrixXf>(A_);
+    MatrixXf Bm = as<MatrixXf>(B_);
     
     MatrixXf Cm = cu_vienna_cudaMatrix_sgemm(Am, Bm);
     

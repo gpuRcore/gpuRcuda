@@ -104,10 +104,5 @@ setClass("fcudaMatrix",
 #' \code{\link{fcudaMatrix-class}}
 #' @export
 setClass("dcudaMatrix",
-         contains = "cudaMatrix",
-         validity = function(object) {
-           if( typeof(object) != "double"){
-             return("dcudaMatrix must be of type 'double'")
-           }
-           TRUE
-         })
+         contains = "cudaMatrix"
+         )

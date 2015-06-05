@@ -51,22 +51,23 @@ else
     break
 fi
 
-# echo "${PKG_LIBS}" > src/Makevars
-echo "R_LIBS := ${R_LIBS}\n" > src/Makevars
+echo "${PKG_LIBS}" > src/Makevars
+echo "R_LIBS := ${R_LIBS}\n" >> src/Makevars
 echo "cu_sources := \$(wildcard *cu)" >> src/Makevars
 echo "cu_sharedlibs := \$(patsubst %.cu, %.o,\$(cu_sources))\n" >> src/Makevars
 echo "cpp_sources := \$(wildcard *.cpp)" >> src/Makevars
 echo "cpp_sharedlibs := \$(patsubst %.cpp, %.o, \$(cpp_sources))\n" >> src/Makevars
 #echo "OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
-echo "OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
+# echo "OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
+# echo "PKG_OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
 #echo "OBJS := cudaCode.o\n" >> src/Makevars
 # echo "OBJS := \$(cpp_sharedlibs)\n" >> src/Makevars
-# echo "OBJECTS := cudaCode.o \$(cpp_sharedlibs)\n" >> src/Makevars
+echo "OBJECTS = \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
 echo "R_INCL := ${R_INCL}\n" >> src/Makevars
 echo "CU_ARGS := ${CU_ARGS}" >> src/Makevars
 echo "CU_INCL := ${CU_INCL}" >> src/Makevars
 echo "CU_ARCH := ${CU_ARCH}\n" >> src/Makevars
-# echo "CXX=g++" >> src/Makevars
+echo "CXX=g++" >> src/Makevars
 echo "NVCC=${NVCCBIN}\n" >> src/Makevars
 # echo "${CXXFLAGS}" >> src/Makevars
 echo "${LIBS}\n" >> src/Makevars
@@ -75,9 +76,11 @@ echo "${LIBS}\n" >> src/Makevars
 #echo "${PKG_LIBS}\n" >> src/Makevars
 echo "all : gpuRcuda.so\n" >> src/Makevars
 
+# R CMD SHLIB $< -o $@ $(R_LIBS) $(LIBS)
 
-echo "gpuRcuda.so: \$(OBJS)" >> src/Makevars
-echo "\t\t\$(NVCC) \$(R_LIBS) \$(LIBS) -shared -Xlinker \$^ -o \$@\n" >> src/Makevars 
+echo "gpuRcuda.so: \$(OBJECTS)\n" >> src/Makevars
+# echo "\t\t\$(CXX) \$< -o \$@ \$(R_LIBS) \$(LIBS)\n" >> src/Makevars 
+# echo "\t\t\$(NVCC) \$(R_LIBS) \$(LIBS) -shared -Xlinker \$^ -o \$@\n" >> src/Makevars 
 echo "%.o: %.cpp \$(cpp_sources)" >> src/Makevars
 echo "\t\t\$(NVCC) -Xcompiler -fPIC \$(R_INCL) \$< -c\n" >> src/Makevars
 echo "%.o: %.cu \$(cu_sources)" >> src/Makevars

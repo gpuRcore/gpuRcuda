@@ -4,7 +4,7 @@
 
 CXX_STD="CXX_STD=CXX11"
 #PKG_CXXFLAGS="PKG_CXXFLAGS=-I../inst/include"
-CXXFLAGS="CXXFLAGS := -std=c++11 -g -fpic -O3 -Wall -pipe -pedantic -Wno-variadic-macros"
+CXXFLAGS="CXXFLAGS := -std=c++11 -g -fpic -O3 -pipe -pedantic -Wno-variadic-macros"
 
 NVCCBIN="/usr/local/cuda-7.0/bin/nvcc"
 
@@ -12,12 +12,12 @@ PKG_LIBS="PKG_LIBS="
 LIBS="LIBS="
 R_LIBS=`${R_HOME}/bin/R CMD config --ldflags`
 RCPP_LIBS=`${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"`
-ARMA_LIBS=`${R_HOME}/bin/Rscript -e "RcppArmadillo:::CxxFlags()"`
+#ARMA_LIBS=`${R_HOME}/bin/Rscript -e "RcppArmadillo:::CxxFlags()"`
 EIGEN_LIBS=`${R_HOME}/bin/Rscript -e "RcppEigen:::CxxFlags()"`
 VCL_LIBS=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "RViennaCL"), sep = ""))'`
 
 
-R_INCL="-I../inst/include -I/usr/share/R/include ${RCPP_LIBS} ${EIGEN_LIBS} ${ARMA_LIBS} ${VCL_LIBS} "
+R_INCL="-I../inst/include -I/usr/share/R/include ${RCPP_LIBS} ${EIGEN_LIBS} ${VCL_LIBS} "
 CU_ARGS="-Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant"
 CU_INCL="-I/usr/share/R/include -I/usr/include ${VCL_LIBS} ${EIGEN_LIBS}"
 CU_ARCH="-arch=sm_30"
@@ -58,7 +58,7 @@ echo "cu_sharedlibs := \$(patsubst %.cu, %.o,\$(cu_sources))\n" >> src/Makevars
 echo "cpp_sources := \$(wildcard *.cpp)" >> src/Makevars
 echo "cpp_sharedlibs := \$(patsubst %.cpp, %.o, \$(cpp_sources))\n" >> src/Makevars
 #echo "OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
-echo "OBJS := \$(cu_sharedlibs) cudaCode.o \$(cpp_sharedlibs)\n" >> src/Makevars
+echo "OBJS := \$(cu_sharedlibs) \$(cpp_sharedlibs)\n" >> src/Makevars
 #echo "OBJS := cudaCode.o\n" >> src/Makevars
 # echo "OBJS := \$(cpp_sharedlibs)\n" >> src/Makevars
 # echo "OBJECTS := cudaCode.o \$(cpp_sharedlibs)\n" >> src/Makevars
@@ -66,24 +66,38 @@ echo "R_INCL := ${R_INCL}\n" >> src/Makevars
 echo "CU_ARGS := ${CU_ARGS}" >> src/Makevars
 echo "CU_INCL := ${CU_INCL}" >> src/Makevars
 echo "CU_ARCH := ${CU_ARCH}\n" >> src/Makevars
-echo "CXX=g++" >> src/Makevars
+# echo "CXX=g++" >> src/Makevars
 echo "NVCC=${NVCCBIN}\n" >> src/Makevars
-echo "${CXXFLAGS}" >> src/Makevars
+# echo "${CXXFLAGS}" >> src/Makevars
 echo "${LIBS}\n" >> src/Makevars
 #echo "${CXX_STD}" >> src/Makevars
 #echo "${PKG_CXXFLAGS}" >> src/Makevars
 #echo "${PKG_LIBS}\n" >> src/Makevars
 echo "all : gpuRcuda.so\n" >> src/Makevars
+
+
 echo "gpuRcuda.so: \$(OBJS)" >> src/Makevars
-echo "\t\t\$(CXX) -shared -o \$@ \$(OBJS) \$(R_LIBS) \$(LIBS)\n" >> src/Makevars
+echo "\t\t\$(NVCC) \$(R_LIBS) \$(LIBS) -shared -Xlinker \$^ -o \$@\n" >> src/Makevars 
 echo "%.o: %.cpp \$(cpp_sources)" >> src/Makevars
-echo "\t\t\$(CXX) -c -o \$@ \$< \$(CXXFLAGS) -fPIC \$(LIBS) \$(R_INCL)\n" >> src/Makevars
+echo "\t\t\$(NVCC) -Xcompiler -fPIC \$(R_INCL) \$< -c\n" >> src/Makevars
 echo "%.o: %.cu \$(cu_sources)" >> src/Makevars
 echo "\t\t\$(NVCC) \$(CU_ARCH) \$(CU_ARGS) \$(CU_INCL) \$< -c\n" >> src/Makevars
-echo "cudaCode.o:" >> src/Makevars
-echo "\t\t\$(NVCC) \$(CU_ARCH) -dlink -Xcompiler -fPIC \$(cu_sharedlibs) -o \$@\n" >> src/Makevars
+
+# echo "gpuRcuda.so: \$(OBJS)" >> src/Makevars
+# echo "\t\t\$(CXX) -shared -o \$@ \$(OBJS) \$(R_LIBS) \$(LIBS)\n" >> src/Makevars
+# echo "%.o: %.cpp \$(cpp_sources)" >> src/Makevars
+# echo "\t\t\$(CXX) -c -o \$@ \$< \$(CXXFLAGS) -fPIC \$(LIBS) \$(R_INCL)\n" >> src/Makevars
+# echo "%.o: %.cu \$(cu_sources)" >> src/Makevars
+# echo "\t\t\$(NVCC) \$(CU_ARCH) \$(CU_ARGS) \$(CU_INCL) \$< -c\n" >> src/Makevars
+# echo "cudaCode.o:" >> src/Makevars
+# echo "\t\t\$(NVCC) \$(CU_ARCH) -dlink -Xcompiler -fPIC \$(cu_sharedlibs) -o \$@\n" >> src/Makevars
+
 echo "clean:" >> src/Makevars
 echo "\t\t rm -rf *.o Makevars\n" >> src/Makevars
+
+
+
+
 # echo "PHONY: all" >> src/Makevars
 # echo "\t\t@echo hello_world\n" >> src/Makevars
 # echo "print-%:" >> src/Makevars

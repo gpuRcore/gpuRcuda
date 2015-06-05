@@ -2,6 +2,7 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include <RcppArmadillo.h>
+#include <RcppEigen.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -15,6 +16,30 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type A_(A_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type B_(B_SEXP);
     __result = Rcpp::wrap(cpp_cudaMatrix_dgemm(A_, B_));
+    return __result;
+END_RCPP
+}
+// cpp_cudaMatrix_sgemm
+SEXP cpp_cudaMatrix_sgemm(SEXP A_, SEXP B_);
+RcppExport SEXP gpuRcuda_cpp_cudaMatrix_sgemm(SEXP A_SEXP, SEXP B_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type A_(A_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type B_(B_SEXP);
+    __result = Rcpp::wrap(cpp_cudaMatrix_sgemm(A_, B_));
+    return __result;
+END_RCPP
+}
+// cpp_vienna_cudaMatrix_sgemm
+SEXP cpp_vienna_cudaMatrix_sgemm(SEXP A_, SEXP B_);
+RcppExport SEXP gpuRcuda_cpp_vienna_cudaMatrix_sgemm(SEXP A_SEXP, SEXP B_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type A_(A_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type B_(B_SEXP);
+    __result = Rcpp::wrap(cpp_vienna_cudaMatrix_sgemm(A_, B_));
     return __result;
 END_RCPP
 }

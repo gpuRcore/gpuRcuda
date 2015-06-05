@@ -5,3 +5,11 @@ cpp_cudaMatrix_dgemm <- function(A_, B_) {
     .Call('gpuRcuda_cpp_cudaMatrix_dgemm', PACKAGE = 'gpuRcuda', A_, B_)
 }
 
+cpp_cudaMatrix_sgemm <- function(A_, B_) {
+    .Call('gpuRcuda_cpp_cudaMatrix_sgemm', PACKAGE = 'gpuRcuda', A_, B_)
+}
+
+cpp_vienna_cudaMatrix_sgemm <- function(A_, B_) {
+    .Call('gpuRcuda_cpp_vienna_cudaMatrix_sgemm', PACKAGE = 'gpuRcuda', A_, B_)
+}
+

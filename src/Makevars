@@ -1,3 +1,39 @@
-CXX_STD=CXX11
-PKG_CXXFLAGS=-I../inst/include -I/usr/local/cuda-7.0/include
-PKG_LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
+R_LIBS := -Wl,--export-dynamic -fopenmp  -L/usr/lib/R/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
+
+cu_sources := $(wildcard *cu)
+cu_sharedlibs := $(patsubst %.cu, %.o,$(cu_sources))
+
+cpp_sources := $(wildcard *.cpp)
+cpp_sharedlibs := $(patsubst %.cpp, %.o, $(cpp_sources))
+
+OBJS := $(cu_sharedlibs) cudaCode.o $(cpp_sharedlibs)
+
+R_INCL := -I../inst/include -I/usr/share/R/include -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/Rcpp/include -I"/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RcppEigen/include" -I"/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RcppArmadillo/include" -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RViennaCL/include  -I/usr/local/cuda-7.0/include
+
+CU_ARGS := -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant
+CU_INCL := -I/usr/share/R/include -I/usr/include -I/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RViennaCL/include -I"/home/cdeterman/R/x86_64-pc-linux-gnu-library/3.2/RcppEigen/include"
+CU_ARCH := -arch=sm_30
+
+CXX=g++
+NVCC=/usr/local/cuda-7.0/bin/nvcc
+
+CXXFLAGS := -std=c++11 -g -fpic -O3 -Wall -pipe -pedantic -Wno-variadic-macros
+LIBS= -L/usr/local/cuda-7.0/lib64 -Wl,-rpath,/usr/local/cuda-7.0/lib64 -lcudart -lcublas
+
+all : gpuRcuda.so
+
+gpuRcuda.so: $(OBJS)
+		$(CXX) -shared -o $@ $(OBJS) $(R_LIBS) $(LIBS)
+
+%.o: %.cpp $(cpp_sources)
+		$(CXX) -c -o $@ $< $(CXXFLAGS) -fPIC $(LIBS) $(R_INCL)
+
+%.o: %.cu $(cu_sources)
+		$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) $< -c
+
+cudaCode.o:
+		$(NVCC) $(CU_ARCH) -dlink -Xcompiler -fPIC $(cu_sharedlibs) -o $@
+
+clean:
+		 rm -rf *.o Makevars
+

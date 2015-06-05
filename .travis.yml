@@ -16,23 +16,18 @@ r_packages:
 r_github_packages:
   - kaneplusplus/bigmemory
   - cdeterman/bigalgebra
+  - cdeterman/RViennaCL
   - cdeterman/gpuR
 
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
-  - sudo apt-get install -qq fglrx=2:8.960-0ubuntu1 opencl-headers libboost-program-options-dev
-  - sudo add-apt-repository -y ppa:xorg-edgers/ppa
-  - sudo apt-get install nvidia-346 nvidia-settings cuda
+  - sudo apt-get install -qq opencl-headers libboost-program-options-dev nvidia-current
   - cd ..
-  - git clone http://github.com/arrayfire/clBLAS.git
-  - cd clBLAS
-  - mkdir -p build && cd build
-  - cmake ../src -DCMAKE_BUILD_TYPE=Release
-  - make && sudo make install
-  - export LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH}
-  - export LD_RUN_PATH=/usr/local/lib64:${LD_RUN_PATH}
-  - cd ${TRAVIS_BUILD_DIR}
+  - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1204/x86_64/cuda-repo-ubuntu1204_7.0-28_amd64.deb
+  - sudo dpkg -i cuda-repo-ubuntu1204_7.0-28_amd64.deb
+  - sudo apt-get update
+  - sudo apt-get install cuda
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
 

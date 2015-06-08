@@ -18,7 +18,7 @@ B <- matrix(rnorm(ORDER^2), nrow=ORDER)
 gpuA <- cudaMatrix(A, type="double")
 gpuB <- cudaMatrix(B, type="double")
 
-C <- A + B
+C <- A %*% B
 gpuC <- gpuA %*% gpuB
 
 all(C == gpuC)

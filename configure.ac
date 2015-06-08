@@ -8,8 +8,8 @@ AC_PROG_CXX
 
 AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
 if test -z "${CUDA_HOME}"; then
-    CUDA_HOME="/usr/local/cuda-7.0"
-    AC_MSG_RESULT("CUDA_HOME not set; using default ${CUDA_HOME}")
+    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
+    AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
 else
     AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
 fi

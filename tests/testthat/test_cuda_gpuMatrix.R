@@ -7,7 +7,7 @@ options(bigmemory.typecast.warning=FALSE)
 # set seed
 set.seed(123)
 
-ORDER <- 4
+ORDER <- 16
 
 # Base R objects
 Aint <- matrix(sample(seq(10), ORDER^2, replace=TRUE), nrow=ORDER, ncol=ORDER)
@@ -16,24 +16,37 @@ A <- matrix(rnorm(ORDER^2), nrow=ORDER, ncol=ORDER)
 B <- matrix(rnorm(ORDER^2), nrow=ORDER, ncol=ORDER)
 
 
-test_that("CUDA gpuMatrix Double Precision Matrix multiplication successful", {
+test_that("cudaMatrix Single Precision Matrix multiplication successful", {
   
   has_gpu_skip()
-  has_double_skip()
   
   C <- A %*% B
   
-  dgpuA <- cudaMatrix(A, type="float")
-  dgpuB <- cudaMatrix(B, type="float")
+  fgpuA <- cudaMatrix(A, type="float")
+  fgpuB <- cudaMatrix(B, type="float")
   
-  dgpuC <- gpuRcuda:::cpp_vienna_cudaMatrix_sgemm(dgpuA@x, dgpuB@x)
-  #     dgpuC <- dgpuA %*% dgpuB
+  fgpuC <- fgpuA %*% fgpuB
   
-  #     expect_is(dgpuC, "dcudaMatrix")
-  #   expect_equal(dgpuC@x[,], C, tolerance=.Machine$double.eps ^ 0.5, 
-  #                info="double matrix elements not equivalent")  
-  expect_equal(dgpuC, C, tolerance=.Machine$double.eps ^ 0.5, 
+  expect_is(fgpuC, "fcudaMatrix")
+  expect_equal(fgpuC@x[,], C, tolerance=1e-07, 
                info="double matrix elements not equivalent")  
+})
+
+test_that("cudaMatrix Double Precision Matrix multiplication successful", {
+	
+	has_gpu_skip()
+	has_double_skip()
+	
+	C <- A %*% B
+	
+	dgpuA <- cudaMatrix(A, type="double")
+	dgpuB <- cudaMatrix(B, type="double")
+	
+	dgpuC <- dgpuA %*% dgpuB
+	
+	expect_is(dgpuC, "dcudaMatrix")
+	expect_equal(dgpuC@x[,], C, tolerance=.Machine$double.eps ^ 0.5, 
+							 info="double matrix elements not equivalent")  
 })
 
 # test_that("gpuMatrix Integer Matrix multiplication successful", {
@@ -51,21 +64,6 @@ test_that("CUDA gpuMatrix Double Precision Matrix multiplication successful", {
 #                       info="float matrix elements not equivalent")      
 # })
 
-# test_that("gpuMatrix Single Precision Matrix multiplication successful", {
-#     
-#     has_gpu_skip()
-#     
-#     C <- A %*% B
-#     
-#     fgpuA <- gpuMatrix(A, type="float")
-#     fgpuB <- gpuMatrix(B, type="float")
-#     
-#     fgpuC <- fgpuA %*% fgpuB
-#     
-#     expect_is(fgpuC, "fgpuMatrix")
-#     expect_equal(fgpuC@x[,], C, tolerance=1e-07, 
-#                  info="float matrix elements not equivalent")  
-# })
 
 # test_that("gpuMatrix Single Precision Matrix Subtraction successful", {
 #     

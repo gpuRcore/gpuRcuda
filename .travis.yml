@@ -30,6 +30,8 @@ before_install:
   - cd ${TRAVIS_BUILD_DIR}
   - sudo apt-get update
   - sudo apt-get install cuda-drivers cuda-core-7-0 cuda-cudart-dev-7-0
+  - echo "Creating symbolic link to OpenCL because 12.04 CUDA doesn't do it."
+  - sudo ln -s /usr/local/cuda-7.0/lib64/libOpenCL.so /usr/lib/x86_64-linux-gnu/libOpenCL.so
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
 

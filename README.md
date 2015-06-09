@@ -54,7 +54,7 @@ this out by first checking which NVIDIA driver is compatible with your card
 by searching for it in [NVIDIA's Driver Downloads](http://www.nvidia.com/Download/index.aspx?lang=en-us).
 Then check which cuda toolkit is compatible with the driver from this
 [Backward Compatibility Table](http://docs.roguewave.com/totalview/8.14.1/html/index.html#page/User_Guides/totalviewug-about-cuda.31.4.html)
-The cuda-6.5 toolkit was appropriate for me which you can download from the 
+Let's say the cuda-6.5 toolkit was appropriate, which you can download from the 
 [CUDA toolkit archive](https://developer.nvidia.com/cuda-toolkit-archive).
 Once downloaded, run the .run file.
 3. Reboot computer

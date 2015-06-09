@@ -12,6 +12,7 @@ Description: This package is designed to be an extensive of the gpuR
   the same functions with the respective CUDA backend.
 License: GPL (>= 2)
 Depends: gpuR
+Imports: Rcpp
 LinkingTo: Rcpp, RcppEigen, RViennaCL
 Suggests: testthat
 URL: http://github.com/cdeterman/gpuRcuda

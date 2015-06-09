@@ -1,11 +1,11 @@
 PKG_LIBS = -L@CUDA_LIBDIR@ -Wl,-rpath,@CUDA_LIBDIR@ -lcudart
 R_LIBS = @R_LIBS@
 
-cu_sources := $(wildcard *cu)
-cu_sharedlibs := $(patsubst %.cu, %.o,$(cu_sources))
+cu_sources = $(wildcard *.cu)
+cu_sharedlibs = $(patsubst %.cu, %.o,$(cu_sources))
 
-cpp_sources := $(wildcard *.cpp)
-cpp_sharedlibs := $(patsubst %.cpp, %.o, $(cpp_sources))
+cpp_sources = $(wildcard *.cpp)
+cpp_sharedlibs = $(patsubst %.cpp, %.o, $(cpp_sources))
 
 OBJECTS = $(cu_sharedlibs) $(cpp_sharedlibs)
 

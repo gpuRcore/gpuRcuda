@@ -10,12 +10,8 @@ r_packages:
   - devtools
   - Rcpp
   - RcppArmadillo
-  - BH
-  - bigmemory.sri
 
 r_github_packages:
-  - kaneplusplus/bigmemory
-  - cdeterman/bigalgebra
   - cdeterman/RViennaCL
   - cdeterman/gpuR
 
@@ -34,6 +30,8 @@ before_install:
   - sudo ln -s /usr/local/cuda-7.0/lib64/libOpenCL.so /usr/lib/x86_64-linux-gnu/libOpenCL.so
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - sudo ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/libgfortran.so
 
 env:
  global:

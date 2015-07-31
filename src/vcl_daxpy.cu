@@ -4,7 +4,6 @@
 
 // Eigen headers
 #include <Eigen/Core>
-#include <Eigen/Sparse>
 
 // Use CUDA with ViennaCL
 #define VIENNACL_WITH_CUDA 1
@@ -15,11 +14,13 @@
 // ViennaCL headers
 #include "viennacl/matrix.hpp"
 
-//using Eigen::Map;
-using Eigen::MatrixXd;
+typedef Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > MapMatd;
 
 extern "C"
-Eigen::MatrixXd cu_vienna_cudaMatrix_daxpy(double alpha, MatrixXd Am, MatrixXd Bm)
+void cu_vienna_cudaMatrix_daxpy(
+		double alpha, 
+		MapMatd &Am, 
+		MapMatd &Bm)
 {      
     int M = Am.cols();
     int K = Am.rows();
@@ -49,6 +50,4 @@ Eigen::MatrixXd cu_vienna_cudaMatrix_daxpy(double alpha, MatrixXd Am, MatrixXd B
     viennacl::copy(vcl_A, Am);
     
     //std::cout << "Pulled new data to CPU" << std::endl;
-
-    return Am;
 }

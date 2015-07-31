@@ -1,38 +1,48 @@
 
 // eigen headers for handling the R input data
 #include <RcppEigen.h>
-//#include <Eigen/Core>
+
+// header from gpuR for eigen matrix pointers
+#include <gpuR/eigen_helpers.hpp>
 
 using namespace Rcpp;
-using Eigen::MatrixXf;
-using Eigen::MatrixXd;
 
 extern "C" 
 {
-	MatrixXf cu_vienna_cudaMatrix_saxpy(float alpha, MatrixXf Am, MatrixXf Bm);
-	MatrixXd cu_vienna_cudaMatrix_daxpy(double alpha, MatrixXd Am, MatrixXd Bm);
+	void cu_vienna_cudaMatrix_saxpy(
+			float alpha, 
+			MapMat<float> Am, 
+			MapMat<float> Bm);
+	void cu_vienna_cudaMatrix_daxpy(
+			double alpha, 
+			MapMat<double> Am, 
+			MapMat<double> Bm);
 }
 
 //[[Rcpp::export]]
-SEXP cpp_vienna_cudaMatrix_saxpy(SEXP alpha_, SEXP A_, SEXP B_)
+void cpp_vienna_cudaMatrix_saxpy(SEXP alpha_, SEXP ptrA_, SEXP ptrB_)
 {    
 		float alpha = as<float>(alpha_);
-    MatrixXf Am = as<MatrixXf>(A_);
-    MatrixXf Bm = as<MatrixXf>(B_);
     
-    MatrixXf Cm = cu_vienna_cudaMatrix_saxpy(alpha, Am, Bm);
+		Rcpp::XPtr<dynEigen<float> > ptrA(ptrA_);
+    Rcpp::XPtr<dynEigen<float> > ptrB(ptrB_);
     
-    return wrap(Cm);
+    MapMat<float> Am(ptrA->ptr(), ptrA->nrow(), ptrA->ncol());
+    MapMat<float> Bm(ptrB->ptr(), ptrB->nrow(), ptrB->ncol());
+    
+    cu_vienna_cudaMatrix_saxpy(alpha, Am, Bm);
 }
 
 //[[Rcpp::export]]
-SEXP cpp_vienna_cudaMatrix_daxpy(SEXP alpha_, SEXP A_, SEXP B_)
+void cpp_vienna_cudaMatrix_daxpy(SEXP alpha_, SEXP ptrA_, SEXP ptrB_)
 {    
 		double alpha = as<double>(alpha_);
-    MatrixXd Am = as<MatrixXd>(A_);
-    MatrixXd Bm = as<MatrixXd>(B_);
+
+		Rcpp::XPtr<dynEigen<double> > ptrA(ptrA_);
+    Rcpp::XPtr<dynEigen<double> > ptrB(ptrB_);
     
-    MatrixXd Cm = cu_vienna_cudaMatrix_daxpy(alpha, Am, Bm);
+    MapMat<double> Am(ptrA->ptr(), ptrA->nrow(), ptrA->ncol());
+    MapMat<double> Bm(ptrB->ptr(), ptrB->nrow(), ptrB->ncol());
     
-    return wrap(Cm);
+    cu_vienna_cudaMatrix_daxpy(alpha, Am, Bm);
 }

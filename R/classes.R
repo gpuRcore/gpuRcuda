@@ -14,9 +14,7 @@
 #' @section Slots:
 #'  Common to all cudaMatrix objects in the package
 #'  \describe{
-#'      \item{\code{x}:}{An R matrix object}
-#'      \item{\code{type}:}{Character object specifying
-#'      the type the matrix data will be interpreted as}
+#'      \item{\code{address}:}{An R matrix object}
 #'  }
 #' @note R does not contain a native float type.  As such,
 #' the matrix data within a \code{\link{fcudaMatrix-class}} 
@@ -31,19 +29,21 @@
 #' @seealso \code{\link{icudaMatrix-class}}, 
 #' \code{\link{fcudaMatrix-class}},
 #' \code{\link{dcudaMatrix-class}}
-#' @importClassesFrom gpuR gpuMatrix
 #' @export
 setClass('cudaMatrix', 
-         contains = 'gpuMatrix')
+				 contains = 'gpuMatrix')
+
+
+# setClass('cudaMatrix', 
+# 				 slots = c(address="externalptr"))
+
 
 #' @title icudaMatrix Class
 #' @description An integer type matrix in the S4 \code{cudaMatrix}
 #' representation.
 #' @section Slots:
 #'  \describe{
-#'      \item{\code{x}:}{A integer typed R matrix}
-#'      \item{\code{type}:}{Character object specifying
-#'      the type the matrix data is integer}
+#'      \item{\code{address}:}{A integer typed R matrix}
 #'  }
 #' @name icudaMatrix-class
 #' @rdname icudaMatrix-class
@@ -66,9 +66,7 @@ setClass("icudaMatrix",
 #' representation.
 #' @section Slots:
 #'  \describe{
-#'      \item{\code{x}:}{A numeric R matrix.}
-#'      \item{\code{type}:}{Character object specifying
-#'      the type the matrix data is intepreted as float}
+#'      \item{\code{address}:}{A numeric R matrix.}
 #'  }
 #' @name fcudaMatrix-class
 #' @rdname fcudaMatrix-class
@@ -86,9 +84,7 @@ setClass("fcudaMatrix",
 #' representation.
 #' @section Slots:
 #'  \describe{
-#'      \item{\code{x}:}{A numeric R matrix}
-#'      \item{\code{type}:}{Character object specifying
-#'      the type the matrix data is double}
+#'      \item{\code{address}:}{A numeric R matrix}
 #'  }
 #' @name dcudaMatrix-class
 #' @rdname dcudaMatrix-class

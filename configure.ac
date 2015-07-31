@@ -45,10 +45,11 @@ if test x"${RSCRIPT}" == x"yes" ; then
     rcpp_incl=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
 		rcpp_eigen_incl=`${R_HOME}/bin/Rscript -e "RcppEigen:::CxxFlags()"`
 		vcl_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "RViennaCL"), sep = ""))'`
-
-    AC_SUBST(RCPP_INCL,["$rcpp_incl"])
+		gpur_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "gpuR"), sep = ""))'`
+		AC_SUBST(RCPP_INCL,["$rcpp_incl"])
     AC_SUBST(RCPP_EIGEN_INCL,["$rcpp_eigen_incl"])
     AC_SUBST(VCL_INCL,["$vcl_incl"])
+		AC_SUBST(GPUR_INCL, ["$gpur_incl"])
 else
     echo "
   Your installation does not appear to have Rscript installed.

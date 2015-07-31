@@ -4,7 +4,9 @@
 
 // Eigen headers
 #include <Eigen/Core>
-#include <Eigen/Sparse>
+
+// Get Map Eigen objects
+//#include <gpuR/eigen_helpers.hpp>
 
 // Use CUDA with ViennaCL
 #define VIENNACL_WITH_CUDA 1
@@ -15,14 +17,18 @@
 // ViennaCL headers
 #include "viennacl/matrix.hpp"
 #include "viennacl/linalg/prod.hpp"
+#include "viennacl/context.hpp"
 
-//using Eigen::Map;
-using Eigen::MatrixXd;
+typedef Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > MapMatd;
 
 extern "C"
-Eigen::MatrixXd cu_vienna_cudaMatrix_dgemm(MatrixXd Am, MatrixXd Bm)
+void cu_vienna_cudaMatrix_dgemm(
+		MapMatd &Am, 
+		MapMatd &Bm,
+		MapMatd &Cm)
 {      
-    int M = Am.cols();
+
+		int M = Am.cols();
     int K = Am.rows();
     int N = Bm.rows();
     int P = Bm.cols();
@@ -39,7 +45,7 @@ Eigen::MatrixXd cu_vienna_cudaMatrix_dgemm(MatrixXd Am, MatrixXd Bm)
 
     //std::cout << "Created VCL Matrices" << std::endl;
     
-    MatrixXd Cm(K, P);
+    //MatrixXd Cm(K, P);
     
     viennacl::copy(Am, vcl_A); 
     viennacl::copy(Bm, vcl_B); 
@@ -54,5 +60,5 @@ Eigen::MatrixXd cu_vienna_cudaMatrix_dgemm(MatrixXd Am, MatrixXd Bm)
     
     //std::cout << "Pulled new data to CPU" << std::endl;
 
-    return Cm;
+    //return Cm;
 }

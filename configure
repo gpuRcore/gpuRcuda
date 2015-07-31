@@ -589,6 +589,7 @@ R_CPIC
 R_INCL
 NVCC
 CU_INCL
+GPUR_INCL
 VCL_INCL
 RCPP_EIGEN_INCL
 RCPP_INCL
@@ -2809,12 +2810,14 @@ if test x"${RSCRIPT}" == x"yes" ; then
     rcpp_incl=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
 		rcpp_eigen_incl=`${R_HOME}/bin/Rscript -e "RcppEigen:::CxxFlags()"`
 		vcl_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "RViennaCL"), sep = ""))'`
-
-    RCPP_INCL="$rcpp_incl"
+		gpur_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "gpuR"), sep = ""))'`
+		RCPP_INCL="$rcpp_incl"
 
     RCPP_EIGEN_INCL="$rcpp_eigen_incl"
 
     VCL_INCL="$vcl_incl"
+
+		GPUR_INCL="$gpur_incl"
 
 else
     echo "

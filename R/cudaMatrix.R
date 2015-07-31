@@ -31,18 +31,15 @@ setMethod('cudaMatrix',
             data = switch(type,
                           integer = {
                             new("icudaMatrix", 
-                                x=data,
-                                type=type)
+                                address=matrixToIntXptr(data))
                           },
                           float = {
                             new("fcudaMatrix", 
-                                x=data,
-                                type=type)
+                                address=matrixToFloatXptr(data))
                           },
                           double = {
                             new("dcudaMatrix",
-                                x = data, 
-                                type=type)
+                                address = matrixToDoubleXptr(data))
                           },
                           stop("this is an unrecognized 
                                  or unimplemented data type")
@@ -55,34 +52,63 @@ setMethod('cudaMatrix',
 
 
 #' @rdname cudaMatrix-methods
-#' @aliases cudaMatrix,matrix
+#' @aliases cudaMatrix,missing
 setMethod('cudaMatrix', 
-          signature(data = 'gpuMatrix'),
-          function(data, type=NULL){
-            
-            if (is.null(type)) type <- typeof(data)
-            
-            data = switch(type,
-                          integer = {
-                            new("icudaMatrix", 
-                                x=data@x,
-                                type=type)
-                          },
-                          float = {
-                            new("fcudaMatrix", 
-                                x=data@x,
-                                type=type)
-                          },
-                          double = {
-                            new("dcudaMatrix",
-                                x = data@x, 
-                                type=type)
-                          },
-                          stop("this is an unrecognized 
+					signature(data = 'missing'),
+					function(data, ncol=NA, nrow=NA, type=NULL){
+						
+						if (is.null(type)) type <- getOption("gpuRcuda.default.type")
+						
+						data = switch(type,
+													integer = {
+														new("icudaMatrix", 
+																address=emptyIntXptr(nrow, ncol))
+													},
+													float = {
+														new("fcudaMatrix", 
+																address=emptyFloatXptr(nrow, ncol))
+													},
+													double = {
+														new("dcudaMatrix",
+																address = emptyDoubleXptr(nrow, ncol))
+													},
+													stop("this is an unrecognized 
                                  or unimplemented data type")
-            )
-            
-            return(data)
-          },
-          valueClass = "cudaMatrix"
+						)
+						
+						return(data)
+					},
+					valueClass = "cudaMatrix"
 )
+
+
+# #' @importClassesFrom gpuR gpuMatrix
+# #' @rdname cudaMatrix-methods
+# #' @aliases cudaMatrix,gpuMatrix
+# setMethod('cudaMatrix', 
+#           signature(data = 'gpuMatrix'),
+#           function(data, type=NULL){
+#             
+#             if (is.null(type)) type <- typeof(data)
+#             
+#             data = switch(type,
+#                           integer = {
+#                             new("icudaMatrix", 
+#                                 address=data@address)
+#                           },
+#                           float = {
+#                             new("fcudaMatrix", 
+#                                 address=data@address)
+#                           },
+#                           double = {
+#                             new("dcudaMatrix",
+#                                 address = data@address)
+#                           },
+#                           stop("this is an unrecognized 
+#                                  or unimplemented data type")
+#             )
+#             
+#             return(data)
+#           },
+#           valueClass = "cudaMatrix"
+# )

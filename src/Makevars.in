@@ -9,11 +9,11 @@ cpp_sharedlibs = $(patsubst %.cpp, %.o, $(cpp_sources))
 
 OBJECTS = $(cu_sharedlibs) $(cpp_sharedlibs)
 
-R_INC = -I/../inst/include @R_INCL@ @RCPP_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@ @CU_INCL@
+R_INC = -I/../inst/include @R_INCL@ @RCPP_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@ @CU_INCL@ @GPUR_INCL@
 CXX_ARGS = @R_CPIC@
 
 CU_ARGS = -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant
-CU_INCL = @R_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@
+CU_INCL = @R_INCL@ @RCPP_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@
 CU_ARCH = -arch=sm_30
 
 CXX=@CXX@

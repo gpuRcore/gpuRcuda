@@ -3,16 +3,17 @@
 \docType{methods}
 \name{cudaMatrix}
 \alias{cudaMatrix}
-\alias{cudaMatrix,gpuMatrix-method}
 \alias{cudaMatrix,matrix}
 \alias{cudaMatrix,matrix-method}
+\alias{cudaMatrix,missing}
+\alias{cudaMatrix,missing-method}
 \title{Construct a cudaMatrix}
 \usage{
 cudaMatrix(data = NA, ncol = NA, nrow = NA, type = NULL, ...)
 
 \S4method{cudaMatrix}{matrix}(data, type = NULL)
 
-\S4method{cudaMatrix}{gpuMatrix}(data, type = NULL)
+\S4method{cudaMatrix}{missing}(data, ncol = NA, nrow = NA, type = NULL)
 }
 \arguments{
 \item{data}{An object that is or can be converted to a

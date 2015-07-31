@@ -30,9 +30,7 @@ May also remove the type slot
 
  Common to all cudaMatrix objects in the package
  \describe{
-     \item{\code{x}:}{An R matrix object}
-     \item{\code{type}:}{Character object specifying
-     the type the matrix data will be interpreted as}
+     \item{\code{address}:}{An R matrix object}
  }
 }
 \author{

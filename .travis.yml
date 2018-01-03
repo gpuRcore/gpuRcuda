@@ -21,13 +21,13 @@ before_install:
   - sudo apt-get install -qq opencl-headers libboost-program-options-dev
   - cd ..
   - echo "Installing CUDA"
-  - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1204/x86_64/cuda-repo-ubuntu1204_7.0-28_amd64.deb
-  - sudo dpkg -i cuda-repo-ubuntu1204_7.0-28_amd64.deb
+  - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
+  - sudo dpkg -i cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
   - cd ${TRAVIS_BUILD_DIR}
   - sudo apt-get update
-  - sudo apt-get install cuda-drivers cuda-core-7-0 cuda-cudart-dev-7-0
+  - sudo apt-get install cuda-drivers cuda-core-8-0 cuda-cudart-dev-8-0
   - echo "Creating symbolic link to OpenCL because 12.04 CUDA doesn't do it."
-  - sudo ln -s /usr/local/cuda-7.0/lib64/libOpenCL.so /usr/lib/x86_64-linux-gnu/libOpenCL.so
+  - sudo ln -s /usr/local/cuda-8.0/lib64/libOpenCL.so /usr/lib/x86_64-linux-gnu/libOpenCL.so
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90

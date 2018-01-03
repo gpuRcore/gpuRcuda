@@ -1,11 +1,10 @@
 # gpuRcuda: The Simple CUDA GPU Interface for R
-[![Travis-CI Build Status](https://travis-ci.org/cdeterman/gpuRcuda.png?branch=master)](https://travis-ci.org/cdeterman/gpuRcuda)
+[![Travis-CI Build Status](https://travis-ci.org/gpuRcore/gpuRcuda.png?branch=master)](https://travis-ci.org/gpuRcore/gpuRcuda)
 
 Welcome to gpuRcuda!  This package is designed to be an extension upon the
 more general [gpuR](https://github.com/cdeterman/gpuR) package.  Essentially,
-this package creates a secondary level of child classes that inherit from
-gpuR classes.  As such, any functions defined in gpuR (i.e. OpenCL counterpart)
-will also work on any of the objects defined herein.  The key aspect of this
+this package creates a new series of classes that mirror those from
+gpuR classes.  The key aspect of this
 package is to allow the user to use a CUDA backend where the NVIDIA specific
 language will improve overall performance.
 

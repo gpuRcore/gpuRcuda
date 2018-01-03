@@ -1,0 +1,26 @@
+CXX_STD = CXX11
+
+PKG_CPPFLAGS = "-I../inst/include -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+PKG_CXXFLAGS = "-fopenmp"
+#PKG_LIBS = "-fopenmp"
+
+CXX_OBJS = device_matrix.o device_vector.o host_matrix.o host_vector.o RcppExports.o utils.o
+OBJECTS = $(CXX_OBJS)
+
+all: gpuRcuda.so
+
+BACKEND = @BACKEND@
+ifeq "$(BACKEND)" "CUDA"
+NVCC = @NVCC@
+CUDA_INCS = @CUDA_INCS@
+
+%.o: %.cpp
+	$(NVCC) -DGPU -x cu -c -Xcompiler "-fPIC" $(CUDA_INCS) $< -o $@
+gpuRcuda.so: $(OBJECTS)
+	$(NVCC) --shared $(OBJECTS) -o $@
+else
+gpuRcuda.so: $(OBJECTS)
+endif
+
+clean:
+	@rm -rf *.o *.so *.dll

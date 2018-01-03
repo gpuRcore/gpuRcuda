@@ -27,6 +27,9 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install cuda-drivers cuda-core-8-0 cuda-cudart-dev-8-0
   - echo "Creating symbolic link to OpenCL because 12.04 CUDA doesn't do it."
+  - ls /usr/local/
+  - ls /usr/local/cuda-8.0
+  - ls /usr/local/cuda-8.0/lib64/
   - sudo ln -s /usr/local/cuda-8.0/lib64/libOpenCL.so /usr/lib/x86_64-linux-gnu/libOpenCL.so
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"

@@ -8,7 +8,7 @@ compiler:
   - g++
 
 dist: trusty
-#sudo: required
+sudo: required
 warnings_are_errors: false
 
 env:

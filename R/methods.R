@@ -131,61 +131,108 @@ setMethod("rowMeans",
 						cuda_rowMeans(x)
 					})
 
-#' @title The Number of Rows/Columns of a cudaMatrix
-#' @param x A cudaMatrix object
+#' @title The Number of Rows/Columns of a gpuRcudaMatrix
+#' @description \code{nrow} and \code{ncol} return the number of rows
+#' or columns present in \code{x}.
+#' @param x A gpuRcudaMatrix object
 #' @return An integer of length 1
-#' @rdname nrow.cudaMatrix
+#' @docType methods
+#' @rdname nrow-gpuRcudaMatrix
 #' @aliases nrow,cudaMatrix
+#' @aliases nrow,nvMatrix
 #' @aliases ncol,cudaMatrix
+#' @aliases ncol,nvMatrix
 #' @author Charles Determan Jr.
 #' @export
-setMethod('nrow', signature(x="cudaMatrix"), 
+setMethod('nrow', signature(x="gpuRcudaMatrix"), 
 					function(x) {
 						switch(typeof(x),
-									 "integer" = return(cpp_inrow(x@address)),
-									 "float" = return(cpp_fnrow(x@address)),
-									 "double" = return(cpp_dnrow(x@address))
+									 "integer" = return(cpp_nrow(x@address, 4L)),
+									 "float" = return(cpp_nrow(x@address, 6L)),
+									 "double" = return(cpp_nrow(x@address, 8L))
 						)
 					}
 )
 
-#' @rdname nrow.cudaMatrix
+#' @rdname nrow-gpuRcudaMatrix
 #' @export
-setMethod('ncol', signature(x="cudaMatrix"),
+setMethod('ncol', signature(x="gpuRcudaMatrix"),
 					function(x) {
 						switch(typeof(x),
-									 "integer" = return(cpp_incol(x@address)),
-									 "float" = return(cpp_fncol(x@address)),
-									 "double" = return(cpp_dncol(x@address))
+									 "integer" = return(cpp_ncol(x@address, 4L)),
+									 "float" = return(cpp_ncol(x@address, 6L)),
+									 "double" = return(cpp_ncol(x@address, 8L))
 						)
 					}
 )
 
 
-#' @title cudaMatrix dim method
-#' @param x A cudaMatrix object
+#' @title gpuRcuda dim method
+#' @param x A gpuRcuda matrix object
 #' @return A length 2 vector of the number of rows and columns respectively.
+#' @docType methods
+#' @rdname dim-methods
 #' @author Charles Determan Jr.
 #' @aliases dim,cudaMatrix
+#' @aliases dim,nvMatrix
 #' @export
-setMethod('dim', signature(x="cudaMatrix"),
+setMethod('dim', signature(x="gpuRcudaMatrix"),
 					function(x) return(c(nrow(x), ncol(x))))
 
-#' @title Extract all cudaMatrix elements
-#' @param x A cudaMatrix object
+#' @title Extract gpuRcuda elements
+#' @param x A gpuRcuda object
 #' @param i missing
 #' @param j missing
 #' @param drop missing
-#' @aliases [,cudaMatrix
+#' @docType methods
+#' @rdname extract-methods
 #' @author Charles Determan Jr.
 #' @export
 setMethod("[",
 					signature(x = "cudaMatrix", i = "missing", j = "missing", drop = "missing"),
 					function(x, i, j, drop) {
+						
+						init <- ifelse(typeof(x) == "double", 0, 0L)
+						out <- matrix(init, nrow = nrow(x), ncol = ncol(x))
+						
 						switch(typeof(x),
-									 "integer" = return(iXptrToSEXP(x@address)),
-									 "float" = return(fXptrToSEXP(x@address)),
-									 "double" = return(dXptrToSEXP(x@address))
+									 "integer" = {
+									 		cudaMatToSEXP(x@address, out, 4L)
+									 		return(out)
+									 },
+									 "float" = {
+									 		cudaMatToSEXP(x@address, out, 6L)
+									 		return(out)
+									 },
+									 "double" = {
+									 		cudaMatToSEXP(x@address, out, 8L)
+									 		return(out)
+									 }
+						)
+					})
+
+#' @rdname extract-methods
+#' @export
+setMethod("[",
+					signature(x = "nvMatrix", i = "missing", j = "missing", drop = "missing"),
+					function(x, i, j, drop) {
+						
+						init <- ifelse(typeof(x) == "double", 0, 0L)
+						out <- matrix(init, nrow = nrow(x), ncol = ncol(x))
+						
+						switch(typeof(x),
+									 "integer" = {
+									 		nvMatToSEXP(x@address, out, 4L)
+										 	return(out)
+									 	},
+									 "float" = {
+									 		nvMatToSEXP(x@address, out, 6L)
+										 	return(out)
+									 	},
+									 "double" = {
+									 		nvMatToSEXP(x@address, out, 8L)
+									 		return(out)
+									 }
 						)
 					})
 

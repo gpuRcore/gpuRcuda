@@ -1,82 +1,72 @@
-#include <RcppEigen.h>
 
-#include "gpuR/eigen_helpers.hpp"
+#include "gpuRcuda/thrust_matrix.hpp"
+#include "gpuRcuda/thrust_vector.hpp"
 
 using namespace Rcpp;
 
 template <typename T>
+int cpp_length(SEXP ptrA_)
+{
+	Rcpp::XPtr<thrust_vector<T> > ptrA(ptrA_);
+	return ptrA->size();
+}
+
+template <typename T>
 int cpp_ncol(SEXP ptrA_)
 {
-    Rcpp::XPtr<dynEigen<T> > ptrA(ptrA_);
+    Rcpp::XPtr<thrust_matrix<T> > ptrA(ptrA_);
     return ptrA->ncol();
 }
 
 template <typename T>
 int cpp_nrow(SEXP ptrA_)
 {
-    Rcpp::XPtr<dynEigen<T> > ptrA(ptrA_);
+    Rcpp::XPtr<thrust_matrix<T> > ptrA(ptrA_);
     return ptrA->nrow();
 }
 
-template <typename T>
-int cpp_gpuVec_size(SEXP ptrA_)
+// [[Rcpp::export]]
+int cpp_length(SEXP ptrA, const int type_flag)
 {
-    Rcpp::XPtr<dynEigenVec<T> > ptrA(ptrA_);
-    return ptrA->length();
+	switch(type_flag){
+	case 4:
+		return cpp_length<int>(ptrA);
+	case 6:
+		// return cpp_length(ptrA);
+	case 8:
+		return cpp_length<double>(ptrA);
+	default:
+		throw Rcpp::exception("unknown type detected for gpuRcuda object!");
+	}
 }
 
 // [[Rcpp::export]]
-int cpp_dncol(SEXP ptrA)
+int cpp_ncol(SEXP ptrA, const int type_flag)
 {
-    return cpp_ncol<double>(ptrA);
+	switch(type_flag){
+		case 4:
+			return cpp_ncol<int>(ptrA);
+		case 6:
+			// return cpp_ncol(ptrA);
+		case 8:
+			return cpp_ncol<double>(ptrA);
+		default:
+				throw Rcpp::exception("unknown type detected for gpuRcuda object!");
+	}
 }
 
 // [[Rcpp::export]]
-int cpp_fncol(SEXP ptrA)
+int cpp_nrow(SEXP ptrA, const int type_flag)
 {
-    return cpp_ncol<float>(ptrA);
+	switch(type_flag){
+		case 4:
+			return cpp_nrow<int>(ptrA);
+		case 6:
+			// return cpp_nrow(ptrA);
+		case 8:
+			return cpp_nrow<double>(ptrA);
+		default:
+			throw Rcpp::exception("unknown type detected for gpuRcuda object!");
+	}
 }
 
-// [[Rcpp::export]]
-int cpp_incol(SEXP ptrA)
-{
-    return cpp_ncol<int>(ptrA);
-}
-
-// [[Rcpp::export]]
-int cpp_dnrow(SEXP ptrA)
-{
-    return cpp_nrow<double>(ptrA);
-}
-
-// [[Rcpp::export]]
-int cpp_fnrow(SEXP ptrA)
-{
-    return cpp_nrow<float>(ptrA);
-}
-
-// [[Rcpp::export]]
-int cpp_inrow(SEXP ptrA)
-{
-    return cpp_nrow<int>(ptrA);
-}
-
-/*** gpuVector size ***/
-
-// [[Rcpp::export]]
-int cpp_dgpuVec_size(SEXP ptrA)
-{
-    return cpp_gpuVec_size<double>(ptrA);
-}
-
-// [[Rcpp::export]]
-int cpp_fgpuVec_size(SEXP ptrA)
-{
-    return cpp_gpuVec_size<float>(ptrA);
-}
-
-// [[Rcpp::export]]
-int cpp_igpuVec_size(SEXP ptrA)
-{
-    return cpp_gpuVec_size<int>(ptrA);
-}

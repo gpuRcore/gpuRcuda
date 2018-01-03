@@ -2,23 +2,44 @@ Package: gpuRcuda
 Type: Package
 Title: CUDA GPU functions for R Objects
 Version: 1.0.0
-Date: 2015-05-26
+Date: 2018-01-02
 Author: Charles Determan Jr.
 Maintainer: Charles Determan Jr. <cdetermanjr@gmail.com>
-Description: This package is designed to be an extensive of the gpuR
-	  package.  The classes herein inherit the gpuR classes as all the
-	  functions herein are intended to also be implemented with the respective
-	  OpenCL version in gpuR.  This package will allow the user to easily use
-	  the same functions with the respective CUDA backend.
+Description: This package is designed to be a companion to the gpuR
+	  package.  The classes herein leverage the thrust c++ template
+	  library to facilitate simple use of CUDA/OPENMP backends.  This 
+	  package allows the user to easily use the same 'base' functions 
+	  while leveraging potential NVIDIA technology.
 License: GPL (>= 2)
-Imports: Rcpp,
-		methods,
-		gpuR
-LinkingTo: Rcpp, 
-		RcppEigen, 
-		RViennaCL,
-		gpuR
+Encoding: UTF-8
+Imports: 
+		Rcpp,
+		methods
+LinkingTo: 
+		Rcpp, 
+		thrust
 Suggests: testthat
-URL: http://github.com/cdeterman/gpuRcuda
-BugReports: http://github.com/cdeterman/gpuRcuda/issues/new
+URL: http://github.com/gpuRcore/gpuRcuda
+BugReports: http://github.com/gpuRcore/gpuRcuda/issues/new
 SystemRequirements: C++11
+Collate: 
+    'RcppExports.R'
+    'class.R'
+    'class-cudaMatrix.R'
+    'class-cudaVector.R'
+    'class-nvMatrix.R'
+    'class-nvVector.R'
+    'cudaMatrix.R'
+    'cudaVector.R'
+    'hello-gpuRcuda.R'
+    'methods-cudaVector.R'
+    'methods-nvVector.R'
+    'methods-vector.R'
+    'methods.R'
+    'nvMatrix.R'
+    'nvVector.R'
+    'test_utils.R'
+    'typeof.R'
+    'wrappers.R'
+    'zzz.R'
+RoxygenNote: 6.0.1

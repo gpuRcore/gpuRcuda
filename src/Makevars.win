@@ -1,0 +1,20 @@
+CXX_STD = CXX11
+
+#SLAPACK_LIBS = `${R_HOME}/bin${R_ARCH_BIN}/Rscript -e "float:::ldflags()"`
+
+PKG_CPPFLAGS = -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP $(SHLIB_OPENMP_CFLAGS)
+PKG_CXXFLAGS = -I. -I../inst/include $(SHLIB_OPENMP_CXXFLAGS)
+#PKG_LIBS = $(SHLIB_OPENMP_CFLAGS) "$(SLAPACK_LIBS)"
+PKG_LIBS = $(SHLIB_OPENMP_CFLAGS)
+
+CXX_SOURCES = $(wildcard *.cpp)
+C_SOURCES = $(wildcard *.c)
+OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o)
+
+all: $(SHLIB)
+
+$(SHLIB): $(OBJECTS)
+
+clean:
+	@rm -rf *.o *.so *.dll \
+		Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)

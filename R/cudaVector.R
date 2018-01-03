@@ -20,26 +20,22 @@ setGeneric("cudaVector", function(data, length, type=NULL, ...){
 #' @aliases cudaVector,vector
 setMethod('cudaVector', 
 					signature(data = 'vector', length = 'missing'),
-					function(data, length, type=NULL){
+					function(data, length=NULL, type=NULL){
 						
 						if (is.null(type)) type <- typeof(data)
-						if (!missing(length)) {
-							warning("length argument not currently used when passing
-											in data")
-						}
 						
 						data = switch(type,
 													integer = {
 														new("icudaVector", 
-																address=vectorToIntXptr(data))
+																address = sexpToDeviceVector(data, length(data), 4L))
 													},
 													float = {
 														new("fcudaVector", 
-																address=vectorToFloatXptr(data))
+																address = sexpToDeviceVector(data, length(data), 6L))
 													},
 													double = {
 														new("dcudaVector",
-																address = vectorToDoubleXptr(data))
+																address = sexpToDeviceVector(data, length(data), 8L))
 													},
 													stop("this is an unrecognized 
 															 or unimplemented data type")
@@ -58,20 +54,20 @@ setMethod('cudaVector',
 						
 						if (is.null(type)) type <- getOption("gpuRcuda.default.type")
 						if (length <= 0) stop("length must be a positive integer")
-						if (!is.integer(length)) stop("length must be a positive integer")
+						if (length != as.integer(length)) stop("length must be a positive integer")
 						
 						data = switch(type,
 													integer = {
 														new("icudaVector", 
-																address=emptyVecIntXptr(length))
+																address = cudaVecEmpty(length, 4L))
 													},
 													float = {
 														new("fcudaVector", 
-																address=emptyVecFloatXptr(length))
+																address = cudaVecEmpty(length, 6L))
 													},
 													double = {
 														new("dcudaVector",
-																address = emptyVecDoubleXptr(length))
+																address = cudaVecEmpty(length, 8L))
 													},
 													stop("this is an unrecognized 
                                  or unimplemented data type")

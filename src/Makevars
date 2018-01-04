@@ -1,7 +1,7 @@
 CXX_STD = CXX11
 
-PKG_CPPFLAGS = "-I../inst/include -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-PKG_CXXFLAGS = "-fopenmp"
+PKG_CPPFLAGS = -I. -I../inst/include -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP
+PKG_CXXFLAGS = -fopenmp
 #PKG_LIBS = "-fopenmp"
 
 CXX_OBJS = device_matrix.o device_vector.o host_matrix.o host_vector.o RcppExports.o utils.o

@@ -18,7 +18,7 @@ Imports:
 LinkingTo: 
 		Rcpp, 
 		thrust
-Suggests: gpuR, testthat
+Suggests: testthat
 URL: http://github.com/gpuRcore/gpuRcuda
 BugReports: http://github.com/gpuRcore/gpuRcuda/issues/new
 SystemRequirements: C++11

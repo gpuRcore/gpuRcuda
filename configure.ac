@@ -8,19 +8,19 @@ AC_PROG_CXX
 
 GPURCUDA_CPPFLAGS="-I. -I../inst/include"
 GPURCUDA_CXXFLAGS=""
-LIBS=""
+GPURCUDA_LIBS=""
 
 if test "$BACKEND" = "OPENMP"; then
 
 		AC_MSG_NOTICE("BACKEND = OPENMP")
-		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-		GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
+		GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+		GPURCUDA_CXXFLAGS="${GPURCUDA_CXXFLAGS} -fopenmp"
 	
 
 elif test "$BACKEND" = "CUDA"; then
 
 		AC_MSG_NOTICE("BACKEND = CUDA")
-		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
+		GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
 
 		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
 		if test -z "${CUDA_HOME}"; then
@@ -42,12 +42,14 @@ elif test "$BACKEND" = "CUDA"; then
 		if test -z "${BIT64}"; then
 				AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
 				cu_libdir="${CUDA_HOME}/lib"
-				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+				#AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
 		else
 				AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
 				cu_libdir="${CUDA_HOME}/lib64"
-				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+				#AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
 		fi
+
+		GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
 else
 
 		AC_MSG_NOTICE("No recognized BACKEND defined so trying CUDA first")
@@ -63,7 +65,7 @@ else
 		
 		if test -z "${CUDA_HOME}"; then
 			AC_MSG_RESULT("No CUDA installation found, attempting OPENMP install")
-			GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+			GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
 			GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
 		else
 			AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
@@ -81,12 +83,14 @@ else
 			if test -z "${BIT64}"; then
 					AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
 					cu_libdir="${CUDA_HOME}/lib"
-					AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+					#AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
 			else
 					AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
 					cu_libdir="${CUDA_HOME}/lib64"
-					AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+					#AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
 			fi
+
+			GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
 
 		fi
 
@@ -131,5 +135,5 @@ AC_SUBST(NVCC)
 AC_SUBST(R_INCL)
 AC_SUBST(R_CPIC)
 AC_SUBST(R_LIBS)
-AC_SUBST(PKG_LIBS)
+AC_SUBST(GPURCUDA_LIBS)
 AC_OUTPUT(src/Makevars)

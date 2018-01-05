@@ -589,6 +589,8 @@ R_CPIC
 R_INCL
 NVCC
 CU_INCL
+GPURCUDA_CXXFLAGS
+GPURCUDA_CPPFLAGS
 THRUST_INCL
 RCPP_INCL
 RSCRIPT
@@ -2684,23 +2686,23 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
-CPPFLAGS="-I. -I../inst/include"
-CXXFLAGS=""
+GPURCUDA_CPPFLAGS="-I. -I../inst/include"
+GPURCUDA_CXXFLAGS=""
 LIBS=""
 
 if test "$BACKEND" = "OPENMP"; then
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: \"BACKEND = OPENMP\"" >&5
 $as_echo "$as_me: \"BACKEND = OPENMP\"" >&6;}
-		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-		CXXFLAGS="${CXXFLAGS} -fopenmp"
+		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+		GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
 
 
 elif test "$BACKEND" = "CUDA"; then
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: \"BACKEND = CUDA\"" >&5
 $as_echo "$as_me: \"BACKEND = CUDA\"" >&6;}
-		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
+		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking \"Checking environment variable CUDA_HOME\"" >&5
 $as_echo_n "checking \"Checking environment variable CUDA_HOME\"... " >&6; }
@@ -2786,22 +2788,23 @@ $as_echo "$as_me: \"No recognized BACKEND defined so trying CUDA first\"" >&6;}
 $as_echo_n "checking \"Checking environment variable CUDA_HOME\"... " >&6; }
 		if test -z "${CUDA_HOME}"; then
 		    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
-
-		    if test -z "${CUDA_HOME}"; then
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"No CUDA installation found" >&5
-$as_echo "\"No CUDA installation found" >&6; }
-			CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-			CXXFLAGS="${CXXFLAGS} -fopenmp"
-		    else
-		        { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"CUDA_HOME not set; using highest version found ${CUDA_HOME}\"" >&5
-$as_echo "\"CUDA_HOME not set; using highest version found ${CUDA_HOME}\"" >&6; }
-		    fi
-		else
-		    { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"using CUDA_HOME=${CUDA_HOME}\"" >&5
-$as_echo "\"using CUDA_HOME=${CUDA_HOME}\"" >&6; }
 		fi
 
-		as_ac_File=`$as_echo "ac_cv_file_${CUDA_HOME}/bin/nvcc" | $as_tr_sh`
+		#else
+		#    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+		#fi
+
+		if test -z "${CUDA_HOME}"; then
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"No CUDA installation found" >&5
+$as_echo "\"No CUDA installation found" >&6; }
+			GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+			GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
+		else
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"using CUDA_HOME=${CUDA_HOME}\"" >&5
+$as_echo "\"using CUDA_HOME=${CUDA_HOME}\"" >&6; }
+			#AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
+
+			as_ac_File=`$as_echo "ac_cv_file_${CUDA_HOME}/bin/nvcc" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ${CUDA_HOME}/bin/nvcc" >&5
 $as_echo_n "checking for ${CUDA_HOME}/bin/nvcc... " >&6; }
 if eval \${$as_ac_File+:} false; then :
@@ -2822,16 +2825,16 @@ if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
   HAS_NVCC="yes"
 fi
 
-		if test -z "${HAS_NVCC}"; then
-		    as_fn_error $? "\"NVCC not found; check CUDA install\"" "$LINENO" 5
-		else
-		    { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"NVCC found\"" >&5
+			if test -z "${HAS_NVCC}"; then
+			    as_fn_error $? "\"NVCC not found; check CUDA install\"" "$LINENO" 5
+			else
+			    { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"NVCC found\"" >&5
 $as_echo "\"NVCC found\"" >&6; }
-		fi
+			fi
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking \"whether this is the 64 bit linux version of CUDA\"" >&5
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking \"whether this is the 64 bit linux version of CUDA\"" >&5
 $as_echo_n "checking \"whether this is the 64 bit linux version of CUDA\"... " >&6; }
-		as_ac_File=`$as_echo "ac_cv_file_${CUDA_HOME}/lib64/libcudart.so" | $as_tr_sh`
+			as_ac_File=`$as_echo "ac_cv_file_${CUDA_HOME}/lib64/libcudart.so" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ${CUDA_HOME}/lib64/libcudart.so" >&5
 $as_echo_n "checking for ${CUDA_HOME}/lib64/libcudart.so... " >&6; }
 if eval \${$as_ac_File+:} false; then :
@@ -2852,19 +2855,22 @@ if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
   BIT64="yes"
 fi
 
-		if test -z "${BIT64}"; then
-				{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"no -- using ${CUDA_HOME}/lib for CUDA libs\"" >&5
+			if test -z "${BIT64}"; then
+					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"no -- using ${CUDA_HOME}/lib for CUDA libs\"" >&5
 $as_echo "\"no -- using ${CUDA_HOME}/lib for CUDA libs\"" >&6; }
-				cu_libdir="${CUDA_HOME}/lib"
-				CUDA_LIBDIR="$cu_libdir"
+					cu_libdir="${CUDA_HOME}/lib"
+					CUDA_LIBDIR="$cu_libdir"
 
-		else
-				{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&5
+			else
+					{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&5
 $as_echo "\"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&6; }
-				cu_libdir="${CUDA_HOME}/lib64"
-				CUDA_LIBDIR="$cu_libdir"
+					cu_libdir="${CUDA_HOME}/lib64"
+					CUDA_LIBDIR="$cu_libdir"
+
+			fi
 
 		fi
+
 fi
 
 ## look for Rscript, but use the one found via R_HOME to allow for multiple installations
@@ -2939,6 +2945,8 @@ NVCC="${CUDA_HOME}/bin/nvcc"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building Makevars" >&5
 $as_echo "$as_me: Building Makevars" >&6;}
+
+
 
 
 

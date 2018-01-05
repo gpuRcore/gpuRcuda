@@ -6,21 +6,21 @@ AC_REQUIRE_CPP
 echo "Checking for C++ Compiler"
 AC_PROG_CXX
 
-CPPFLAGS="-I. -I../inst/include"
-CXXFLAGS=""
+GPURCUDA_CPPFLAGS="-I. -I../inst/include"
+GPURCUDA_CXXFLAGS=""
 LIBS=""
 
 if test "$BACKEND" = "OPENMP"; then
 
 		AC_MSG_NOTICE("BACKEND = OPENMP")
-		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-		CXXFLAGS="${CXXFLAGS} -fopenmp"
+		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+		GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
 	
 
 elif test "$BACKEND" = "CUDA"; then
 
 		AC_MSG_NOTICE("BACKEND = CUDA")
-		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
+		GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
 
 		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
 		if test -z "${CUDA_HOME}"; then
@@ -55,36 +55,41 @@ else
 		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
 		if test -z "${CUDA_HOME}"; then
 		    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
+		fi
 
-		    if test -z "${CUDA_HOME}"; then
+		#else
+		#    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+		#fi
+		
+		if test -z "${CUDA_HOME}"; then
 			AC_MSG_RESULT("No CUDA installation found, attempting OPENMP install")
-			CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
-			CXXFLAGS="${CXXFLAGS} -fopenmp"
-		    else
-		        AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
-		    fi
+			GPURCUDA_CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+			GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
 		else
-		    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+			AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+			#AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
+
+			AC_CHECK_FILE([${CUDA_HOME}/bin/nvcc], [HAS_NVCC="yes"])
+			if test -z "${HAS_NVCC}"; then
+			    AC_MSG_ERROR("NVCC not found; check CUDA install")
+			else
+			    AC_MSG_RESULT("NVCC found")
+			fi
+			
+			AC_MSG_CHECKING("whether this is the 64 bit linux version of CUDA")
+			AC_CHECK_FILE([${CUDA_HOME}/lib64/libcudart.so], [BIT64="yes"])
+			if test -z "${BIT64}"; then
+					AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
+					cu_libdir="${CUDA_HOME}/lib"
+					AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+			else
+					AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
+					cu_libdir="${CUDA_HOME}/lib64"
+					AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+			fi
+
 		fi
-		
-		AC_CHECK_FILE([${CUDA_HOME}/bin/nvcc], [HAS_NVCC="yes"])
-		if test -z "${HAS_NVCC}"; then
-		    AC_MSG_ERROR("NVCC not found; check CUDA install")
-		else
-		    AC_MSG_RESULT("NVCC found")
-		fi
-		
-		AC_MSG_CHECKING("whether this is the 64 bit linux version of CUDA")
-		AC_CHECK_FILE([${CUDA_HOME}/lib64/libcudart.so], [BIT64="yes"])
-		if test -z "${BIT64}"; then
-				AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
-				cu_libdir="${CUDA_HOME}/lib"
-				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
-		else
-				AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
-				cu_libdir="${CUDA_HOME}/lib64"
-				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
-		fi
+
 fi
 
 ## look for Rscript, but use the one found via R_HOME to allow for multiple installations
@@ -119,6 +124,8 @@ AC_MSG_CHECKING("building the nvcc command line")
 NVCC="${CUDA_HOME}/bin/nvcc"
 
 AC_MSG_NOTICE([Building Makevars])
+AC_SUBST(GPURCUDA_CPPFLAGS)
+AC_SUBST(GPURCUDA_CXXFLAGS)
 AC_SUBST(CU_INCL)
 AC_SUBST(NVCC)
 AC_SUBST(R_INCL)

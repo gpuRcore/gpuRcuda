@@ -50,7 +50,7 @@ elif test "$BACKEND" = "CUDA"; then
 		fi
 else
 
-		AC_MSG_NOTICE("No recognized BACKEND defined, trying CUDA first")
+		AC_MSG_NOTICE("No recognized BACKEND defined so trying CUDA first")
 		
 		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
 		if test -z "${CUDA_HOME}"; then

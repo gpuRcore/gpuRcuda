@@ -2779,8 +2779,8 @@ $as_echo "\"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&6; }
 		fi
 else
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: \"No recognized BACKEND defined" >&5
-$as_echo "$as_me: \"No recognized BACKEND defined" >&trying CUDA first";}
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: \"No recognized BACKEND defined so trying CUDA first\"" >&5
+$as_echo "$as_me: \"No recognized BACKEND defined so trying CUDA first\"" >&6;}
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking \"Checking environment variable CUDA_HOME\"" >&5
 $as_echo_n "checking \"Checking environment variable CUDA_HOME\"... " >&6; }

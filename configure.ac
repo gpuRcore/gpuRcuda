@@ -6,50 +6,99 @@ AC_REQUIRE_CPP
 echo "Checking for C++ Compiler"
 AC_PROG_CXX
 
-AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
-if test -z "${CUDA_HOME}"; then
-    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
-    AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
-else
-    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
-fi
+CPPFLAGS="-I. -I../inst/include"
+CXXFLAGS=""
+LIBS=""
 
-AC_CHECK_FILE([${CUDA_HOME}/bin/nvcc], [HAS_NVCC="yes"])
-if test -z "${HAS_NVCC}"; then
-    AC_MSG_ERROR("NVCC not found; check CUDA install")
-else
-    AC_MSG_RESULT("NVCC found")
-fi
+if test "$BACKEND" = "OPENMP"; then
 
-AC_MSG_CHECKING("whether this is the 64 bit linux version of CUDA")
-AC_CHECK_FILE([${CUDA_HOME}/lib64/libcudart.so], [BIT64="yes"])
-if test -z "${BIT64}"; then
-		AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
-		cu_libdir="${CUDA_HOME}/lib"
-		AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
-else
-		AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
-		cu_libdir="${CUDA_HOME}/lib64"
-		AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
-fi
+		AC_MSG_NOTICE("BACKEND = OPENMP")
+		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+		CXXFLAGS="${CXXFLAGS} -fopenmp"
+	
 
-R_INCL=`"${R_HOME}/bin/R" CMD config --cppflags`
-R_LIBS=`"${R_HOME}/bin/R" CMD config --ldflags`
-R_CPIC=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
+elif test "$BACKEND" = "CUDA"; then
+
+		AC_MSG_NOTICE("BACKEND = CUDA")
+		CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA"
+
+		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
+		if test -z "${CUDA_HOME}"; then
+		    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
+		    AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
+		else
+		    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+		fi
+		
+		AC_CHECK_FILE([${CUDA_HOME}/bin/nvcc], [HAS_NVCC="yes"])
+		if test -z "${HAS_NVCC}"; then
+		    AC_MSG_ERROR("NVCC not found; check CUDA install")
+		else
+		    AC_MSG_RESULT("NVCC found")
+		fi
+		
+		AC_MSG_CHECKING("whether this is the 64 bit linux version of CUDA")
+		AC_CHECK_FILE([${CUDA_HOME}/lib64/libcudart.so], [BIT64="yes"])
+		if test -z "${BIT64}"; then
+				AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
+				cu_libdir="${CUDA_HOME}/lib"
+				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+		else
+				AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
+				cu_libdir="${CUDA_HOME}/lib64"
+				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+		fi
+else
+
+		AC_MSG_NOTICE("No recognized BACKEND defined, trying CUDA first")
+		
+		AC_MSG_CHECKING("Checking environment variable CUDA_HOME")
+		if test -z "${CUDA_HOME}"; then
+		    CUDA_HOME=`find /usr/local/ -maxdepth 1 -type d -name "cuda*" | sort -V | tail -1`
+
+		    if test -z "${CUDA_HOME}"; then
+			AC_MSG_RESULT("No CUDA installation found, attempting OPENMP install")
+			CPPFLAGS="${CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
+			CXXFLAGS="${CXXFLAGS} -fopenmp"
+		    else
+		        AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
+		    fi
+		else
+		    AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
+		fi
+		
+		AC_CHECK_FILE([${CUDA_HOME}/bin/nvcc], [HAS_NVCC="yes"])
+		if test -z "${HAS_NVCC}"; then
+		    AC_MSG_ERROR("NVCC not found; check CUDA install")
+		else
+		    AC_MSG_RESULT("NVCC found")
+		fi
+		
+		AC_MSG_CHECKING("whether this is the 64 bit linux version of CUDA")
+		AC_CHECK_FILE([${CUDA_HOME}/lib64/libcudart.so], [BIT64="yes"])
+		if test -z "${BIT64}"; then
+				AC_MSG_RESULT("no -- using ${CUDA_HOME}/lib for CUDA libs")
+				cu_libdir="${CUDA_HOME}/lib"
+				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+		else
+				AC_MSG_RESULT("yes -- using ${CUDA_HOME}/lib64 for CUDA libs")
+				cu_libdir="${CUDA_HOME}/lib64"
+				AC_SUBST(CUDA_LIBDIR,["$cu_libdir"])
+		fi
+fi
 
 ## look for Rscript, but use the one found via R_HOME to allow for multiple installations
-AC_DEFUN(AC_PROG_RSCRIPT, [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
+AC_DEFUN([AC_PROG_RSCRIPT], [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
 AC_PROG_RSCRIPT
 
 if test x"${RSCRIPT}" == x"yes" ; then
+		
+		R_HOME=`Rscript -e 'cat(R.home())'`
+
     rcpp_incl=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
-		rcpp_eigen_incl=`${R_HOME}/bin/Rscript -e "RcppEigen:::CxxFlags()"`
-		vcl_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "RViennaCL"), sep = ""))'`
-		gpur_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "gpuR"), sep = ""))'`
+		thrust_incl=`${R_HOME}/bin/Rscript -e 'cat(paste("-I", system.file("include", package = "thrust"), sep = ""))'`
 		AC_SUBST(RCPP_INCL,["$rcpp_incl"])
-    AC_SUBST(RCPP_EIGEN_INCL,["$rcpp_eigen_incl"])
-    AC_SUBST(VCL_INCL,["$vcl_incl"])
-		AC_SUBST(GPUR_INCL, ["$gpur_incl"])
+    AC_SUBST(THRUST_INCL,["$thrust_incl"])
 else
     echo "
   Your installation does not appear to have Rscript installed.
@@ -58,6 +107,10 @@ else
 "
     exit 1
 fi
+
+R_INCL=`"${R_HOME}/bin/R" CMD config --cppflags`
+R_LIBS=`"${R_HOME}/bin/R" CMD config --ldflags`
+R_CPIC=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
 
 
 

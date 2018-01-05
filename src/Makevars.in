@@ -1,33 +1,50 @@
+CXX_STD = CXX11
+
+PKG_CPPFLAGS = @CPPFLAGS@
+PKG_CXXFLAGS = @CXXFLAGS@
+
 PKG_LIBS = -L@CUDA_LIBDIR@ -Wl,-rpath,@CUDA_LIBDIR@ -lcudart
 R_LIBS = @R_LIBS@
-
-cu_sources = $(wildcard *.cu)
-cu_sharedlibs = $(patsubst %.cu, %.o,$(cu_sources))
 
 cpp_sources = $(wildcard *.cpp)
 cpp_sharedlibs = $(patsubst %.cpp, %.o, $(cpp_sources))
 
-OBJECTS = $(cu_sharedlibs) $(cpp_sharedlibs)
+OBJECTS = $(cpp_sharedlibs)
 
-R_INC = -I/../inst/include @R_INCL@ @RCPP_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@ @CU_INCL@ @GPUR_INCL@
+R_INC = -I/../inst/include @R_INCL@ @RCPP_INCL@ @THRUST_INCL@ @CU_INCL@
 CXX_ARGS = @R_CPIC@
 
 CU_ARGS = -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant
-CU_INCL = @R_INCL@ @RCPP_INCL@ @RCPP_EIGEN_INCL@ @VCL_INCL@
+CU_INCL = @R_INCL@ @RCPP_INCL@ @THRUST_INCL@
 CU_ARCH = -arch=sm_30
 
 CXX=@CXX@
 NVCC=@NVCC@
 
-all : gpuRcuda.so
+all: gpuRcuda.so
+
+BACKEND = @BACKEND@
+ifeq "$(BACKEND)" "CUDA"
+%.o: %.cpp $(cpp_sources)
+		$(NVCC) -DGPU - x cu -c -Xcompiler "-fPIC" $(CU_INCL) $< -o $@
 
 gpuRcuda.so: $(OBJECTS)
+		$(NVCC) --shared $(OBJECTS) -o $@
+else
+gpuRcuda.so: $(OBJECTS)
+endif
 
-%.o: %.cpp $(cpp_sources)
-		$(CXX) $(CXX_ARGS) $(R_INC) $< -c
-
-%.o: %.cu $(cu_sources)
-		$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) $< -c
 
 clean:
-		rm -rf *.o Makevars
+	@rm -rf *.o *.so *.dll
+
+
+#%.o: %.cpp $(cpp_sources)
+#		$(CXX) $(CXX_ARGS) $(R_INC) $< -c
+
+#%.o: %.cu $(cu_sources)
+#		$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) $< -c
+
+#clean:
+#		rm -rf *.o Makevars
+

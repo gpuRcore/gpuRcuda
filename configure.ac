@@ -15,7 +15,9 @@ if test "$BACKEND" = "OPENMP"; then
 		AC_MSG_NOTICE("BACKEND = OPENMP")
 		GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
 		GPURCUDA_CXXFLAGS="${GPURCUDA_CXXFLAGS} -fopenmp"
-	
+
+		BACKEND="OPENMP"
+		AC_SUBST(BACKEND)
 
 elif test "$BACKEND" = "CUDA"; then
 
@@ -50,6 +52,8 @@ elif test "$BACKEND" = "CUDA"; then
 		fi
 
 		GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
+		BACKEND="CUDA"
+		AC_SUBST(BACKEND)
 else
 
 		AC_MSG_NOTICE("No recognized BACKEND defined so trying CUDA first")
@@ -67,6 +71,9 @@ else
 			AC_MSG_RESULT("No CUDA installation found, attempting OPENMP install")
 			GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
 			GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
+			BACKEND="OPENMP"
+			AC_SUBST(BACKEND)
+
 		else
 			AC_MSG_RESULT("using CUDA_HOME=${CUDA_HOME}")
 			#AC_MSG_RESULT("CUDA_HOME not set; using highest version found ${CUDA_HOME}")
@@ -91,6 +98,8 @@ else
 			fi
 
 			GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
+			BACKEND="CUDA"
+			AC_SUBST(BACKEND)
 
 		fi
 

@@ -594,6 +594,7 @@ GPURCUDA_CPPFLAGS
 THRUST_INCL
 RCPP_INCL
 RSCRIPT
+BACKEND
 CXXCPP
 OBJEXT
 EXEEXT
@@ -2696,6 +2697,8 @@ $as_echo "$as_me: \"BACKEND = OPENMP\"" >&6;}
 		GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
 		GPURCUDA_CXXFLAGS="${GPURCUDA_CXXFLAGS} -fopenmp"
 
+		BACKEND="OPENMP"
+
 
 elif test "$BACKEND" = "CUDA"; then
 
@@ -2778,6 +2781,8 @@ $as_echo "\"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&6; }
 		fi
 
 		GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
+		BACKEND="CUDA"
+
 else
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: \"No recognized BACKEND defined so trying CUDA first\"" >&5
@@ -2798,6 +2803,9 @@ $as_echo_n "checking \"Checking environment variable CUDA_HOME\"... " >&6; }
 $as_echo "\"No CUDA installation found" >&6; }
 			GPURCUDA_CPPFLAGS="${GPURCUDA_CPPFLAGS} -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP"
 			GPURCUDA_CXXFLAGS="${CXXFLAGS} -fopenmp"
+			BACKEND="OPENMP"
+
+
 		else
 			{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"using CUDA_HOME=${CUDA_HOME}\"" >&5
 $as_echo "\"using CUDA_HOME=${CUDA_HOME}\"" >&6; }
@@ -2867,6 +2875,8 @@ $as_echo "\"yes -- using ${CUDA_HOME}/lib64 for CUDA libs\"" >&6; }
 			fi
 
 			GPURCUDA_LIBS="${GPURCUDA_LIBS} -L${cu_libdir} -Wl,-rpath,${cu_libdir} -lcudart"
+			BACKEND="CUDA"
+
 
 		fi
 

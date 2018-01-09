@@ -1,6 +1,8 @@
 # gpuRcuda: The Simple CUDA GPU Interface for R
 [![Travis-CI Build Status](https://travis-ci.org/gpuRcore/gpuRcuda.png?branch=master)](https://travis-ci.org/gpuRcore/gpuRcuda)
 
+Test coverage: [![Coverage Status](https://coveralls.io/repos/github/gpuRcore/gpuRcuda/badge.svg?branch=master)](https://coveralls.io/github/gpuRcore/gpuRcuda?branch=master)
+
 Welcome to gpuRcuda!  This package is designed to be an extension upon the
 more general [gpuR](https://github.com/cdeterman/gpuR) package.  Essentially,
 this package creates a new series of classes that mirror those from

@@ -46,6 +46,9 @@ before_install:
   #- sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   #- sudo ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/libgfortran.so
 
+# test CUDA build
+after_script:
+  - docker build -t gpurcore/gpurcuda .
    
 after_success:
   - Rscript -e 'devtools::install();library(gpuRcuda);library(methods);devtools::test()'
